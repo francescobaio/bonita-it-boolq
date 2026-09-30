@@ -1,0 +1,43 @@
+[project]
+name = "bonita"
+version = "0.1.0"
+description = "Fine-tuning experiment for Boolean Question Answering in Italian."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+    "bitsandbytes",
+    "datasets",
+    "ipykernel",
+    "ipywidgets",
+    "pandas",
+    "peft",
+    "tensorboard",
+    "torch",
+    "transformers",
+    "trl",
+]
+
+[dependency-groups]
+dev = ["mypy", "ruff"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = true

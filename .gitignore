@@ -1,0 +1,68 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# --- Tool caches ---
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Model weights, checkpoints, training outputs ---
+bonita_full/
+outputs*/
+checkpoint-*/
+runs/
+wandb/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+# --- Data ---
+data/
+*.jsonl
+*.parquet
+*.arrow
+
+# --- Cluster / job logs ---
+*.out
+*.err
+slurm-*.out
+logs/
+
+# --- LaTeX build artifacts (report / slides) ---
+*.aux
+*.log
+*.nav
+*.snm
+*.toc
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+*.vrb
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
