@@ -24,6 +24,7 @@ htmlcov/
 
 # --- Model weights, checkpoints, training outputs ---
 bonita_full/
+student_bonita/
 outputs*/
 checkpoint-*/
 runs/
@@ -36,6 +37,8 @@ wandb/
 
 # --- Data ---
 data/
+results/*
+!results/.gitkeep
 *.jsonl
 *.parquet
 *.arrow

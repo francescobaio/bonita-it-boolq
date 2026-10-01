@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 
 from bonita.config import BASE_MODEL, BONITA_DIR, BONITA_EPOCHS, DEV_FRAC, SEED, TEST_FRAC
 from bonita.data import SPECIAL_TOKENS, bonita_rows, load_boolq_splits, split_by_group
-from bonita.model import load_base_model, train_lora
+from bonita.model import load_model, train_lora
 
 transformers.set_seed(SEED)
 
@@ -22,5 +22,5 @@ print(bonita_train[0]["prompt"] + bonita_train[0]["completion"])
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
 tokenizer.add_tokens(SPECIAL_TOKENS, special_tokens=True)
 
-train_lora(load_base_model(tokenizer), tokenizer, bonita_train, bonita_dev, BONITA_DIR, BONITA_EPOCHS)
+train_lora(load_model(tokenizer), tokenizer, bonita_train, bonita_dev, BONITA_DIR, BONITA_EPOCHS)
 tokenizer.save_pretrained(BONITA_DIR)  # needed to reload BONITA with its special tokens

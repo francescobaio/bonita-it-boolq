@@ -17,10 +17,10 @@ bnb_config = BitsAndBytesConfig(
 )
 
 
-def load_base_model(tokenizer=None) -> transformers.PreTrainedModel:
-    """4-bit base model; the embeddings are resized only if `tokenizer` has no free rows left for its added tokens."""
+def load_model(tokenizer=None, model_name: str = BASE_MODEL) -> transformers.PreTrainedModel:
+    """4-bit model; the embeddings are resized only if `tokenizer` has no free rows left for its added tokens."""
     model = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL,
+        model_name,
         quantization_config=bnb_config,
         device_map="auto",
         dtype=torch.bfloat16,
@@ -31,10 +31,10 @@ def load_base_model(tokenizer=None) -> transformers.PreTrainedModel:
 
 
 def load_bonita(bonita_dir: str):
-    """4-bit base model with the BONITA adapter, and its tokenizer (with the special tokens) padded on the left."""
+    """4-bit model with the BONITA adapter, and its tokenizer (with the special tokens) padded on the left."""
     tokenizer = AutoTokenizer.from_pretrained(bonita_dir)
     tokenizer.padding_side = "left"  # batched generation: every prompt must end right before the new tokens
-    model = PeftModel.from_pretrained(load_base_model(tokenizer), bonita_dir)
+    model = PeftModel.from_pretrained(load_model(tokenizer), bonita_dir)
     model.eval()
     return model, tokenizer
 

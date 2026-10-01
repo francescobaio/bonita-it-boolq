@@ -25,11 +25,14 @@ generations = batch_generate(
     tokenizer,
     [BONITA_INPUT.format(passage=p["passage"]) for p in wiki_passages],
     max_new_tokens=256,
+    stop_strings=["Risposta: Vero", "Risposta: Falso"],
     do_sample=False,
+    use_cache=True,  # Minerva's config disables the KV cache
 )
 
 generated, counts = filter_generations(wiki_passages, generations)
 write_jsonl(generated, GENERATED_PATH)
+os.makedirs(os.path.dirname(GENERATION_STATS_PATH), exist_ok=True)
 with open(GENERATION_STATS_PATH, "w") as f:
     json.dump(counts, f, indent=1)
 

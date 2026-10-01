@@ -14,7 +14,7 @@ def batch_generate(model, tokenizer, prompts: list[str], batch_size: int = 16, *
     predictions = []
     for i in tqdm(range(0, len(prompts), batch_size)):
         inputs = tokenizer(prompts[i : i + batch_size], return_tensors="pt", padding=True).to(model.device)
-        outputs = model.generate(**inputs, pad_token_id=tokenizer.pad_token_id, **generation_kwargs)
+        outputs = model.generate(**inputs, pad_token_id=tokenizer.pad_token_id, tokenizer=tokenizer, **generation_kwargs)
         new_tokens = outputs[:, inputs["input_ids"].shape[1] :]
         predictions += tokenizer.batch_decode(new_tokens, skip_special_tokens=True)
     return predictions
