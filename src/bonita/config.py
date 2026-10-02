@@ -4,10 +4,11 @@ BASE_MODEL = "sapienzanlp/Minerva-7B-base-v1.0"
 INSTRUCTED_MODEL = "sapienzanlp/Minerva-7B-instruct-v1.0"
 
 # outputs of each stage (each stage can be re-run from its files)
-BONITA_DIR = "bonita_full"
+CKPT_DIR = "ckpt"  # adapters and trainer checkpoints (not versioned)
+BONITA_DIR = f"{CKPT_DIR}/bonita_full"
 WIKI_PATH = "wiki_passages.jsonl"
 GENERATED_PATH = "generated_tasks.jsonl"
-STUDENT_DIR = "student_bonita"
+STUDENT_DIR = f"{CKPT_DIR}/student_bonita"
 RESULTS_DIR = "results"  # statistics, metrics and predictions (not versioned)
 GENERATION_STATS_PATH = f"{RESULTS_DIR}/generation_stats.json"
 RESULTS_PATH = f"{RESULTS_DIR}/extrinsic_results.json"

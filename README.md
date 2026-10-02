@@ -86,10 +86,12 @@ To avoid leakage, the 80/20 split is done by passage, and test examples whose pa
 │   ├── model.py             # 4-bit loading, LoRA, SFT training
 │   ├── generation.py        # batched generation, parsing and filtering
 │   └── evaluation.py        # log-likelihood scoring, accuracy and macro-F1
-└── scripts/
-    ├── train_bonita.py      # stage 1: train BONITA
-    ├── generate.py          # stage 2: collect passages and generate the synthetic dataset
-    └── train_student.py     # stage 3: train the student
+├── scripts/
+│   ├── train_bonita.py      # stage 1: train BONITA
+│   ├── generate.py          # stage 2: collect passages and generate the synthetic dataset
+│   └── train_student.py     # stage 3: train the student
+├── ckpt/                    # adapters and trainer checkpoints (not versioned)
+└── results/                 # generation statistics, metrics and predictions (not versioned)
 ```
 
 ## Getting started
@@ -106,7 +108,7 @@ uv sync
 
 - **Slides**: [GitHub Pages — TODO](#) (source on the [`slides`](../../tree/slides) branch)
 - **Report**: LaTeX source and PDF on the [`report`](../../tree/report) branch
-- **Checkpoints**: [Google Drive — TODO](#), with the BONITA adapter and tokenizer (`bonita_full/`) and the student adapter (`student_bonita/`); place them in the repository root to skip the training stages
+- **Checkpoints**: [Google Drive — TODO](#), with the BONITA adapter and tokenizer (`ckpt/bonita_full/`) and the student adapter (`ckpt/student_bonita/`); place them in `ckpt/` to skip the training stages
 
 ## References
 

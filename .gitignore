@@ -23,6 +23,7 @@ htmlcov/
 .ipynb_checkpoints/
 
 # --- Model weights, checkpoints, training outputs ---
+ckpt/
 bonita_full/
 student_bonita/
 outputs*/

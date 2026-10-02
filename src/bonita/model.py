@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import torch
 import transformers
@@ -39,7 +41,25 @@ def load_bonita(bonita_dir: str):
     return model, tokenizer
 
 
-def lora_config() -> LoraConfig:
+def init_special_tokens(model, tokenizer, tokens: list[str]) -> list[int]:
+    """Initializes the input and output embeddings of `tokens` as the mean of those of their name.
+
+    E.g. `<|pipe|>` starts from the mean of the rows of ` pipe`.
+
+    New rows added by `resize_token_embeddings` all start from the same small mean vector: the tokens would be
+    indistinguishable as input and too weak as output to ever be generated. Returns the ids of `tokens`.
+    """
+    token_ids = tokenizer.convert_tokens_to_ids(tokens)
+    with torch.no_grad():
+        for token, token_id in zip(tokens, token_ids, strict=True):
+            name_ids = tokenizer(" " + token.strip("<|>"), add_special_tokens=False).input_ids
+            for layer in (model.get_input_embeddings(), model.get_output_embeddings()):
+                layer.weight[token_id] = layer.weight[name_ids].mean(dim=0)
+    return token_ids
+
+
+def lora_config(trainable_token_ids: list[int] | None = None) -> LoraConfig:
+    """LoRA on all linear projections, plus the rows of `trainable_token_ids` in the (untied) embeddings and LM head."""
     return LoraConfig(
         r=16,
         lora_alpha=32,
@@ -47,6 +67,9 @@ def lora_config() -> LoraConfig:
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM",
+        trainable_token_indices={"embed_tokens": trainable_token_ids, "lm_head": trainable_token_ids}
+        if trainable_token_ids
+        else None,
     )
 
 
@@ -77,19 +100,32 @@ def sft_config(output_dir: str, num_epochs: int) -> SFTConfig:
     )
 
 
-def train_lora(model, tokenizer, train_rows: list[dict], dev_rows: list[dict], output_dir: str, num_epochs: int) -> None:
+def train_lora(
+    model,
+    tokenizer,
+    train_rows: list[dict],
+    dev_rows: list[dict],
+    output_dir: str,
+    num_epochs: int,
+    trainable_token_ids: list[int] | None = None,
+) -> None:
     """Adds a fresh LoRA to `model`, trains it, saves the best adapter to `output_dir` and prints the dev losses."""
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
-    model = get_peft_model(model, lora_config())
+    model = get_peft_model(model, lora_config(trainable_token_ids))
     model.print_trainable_parameters()
     trainer = SFTTrainer(
-        model=model,  # type: ignore
-        args=sft_config(f"outputs_{output_dir}", num_epochs),
+        model=model,
+        args=sft_config(
+            os.path.join(os.path.dirname(output_dir), f"outputs_{os.path.basename(output_dir)}"), num_epochs
+        ),
         train_dataset=Dataset.from_list(train_rows).select_columns(["prompt", "completion"]),
         eval_dataset=Dataset.from_list(dev_rows).select_columns(["prompt", "completion"]),
         processing_class=tokenizer,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
     trainer.train()
-    trainer.save_model(output_dir)
+    # the best checkpoint is loaded into `model`; only the LoRA and the trained token rows are saved
+    # (PEFT would otherwise save the whole resized embeddings and LM head, ~1.7 GB)
+    model.save_pretrained(output_dir, save_embedding_layers=False)
+    tokenizer.save_pretrained(output_dir)
     print(pd.DataFrame(trainer.state.log_history).dropna(subset=["eval_loss"])[["step", "epoch", "eval_loss"]])

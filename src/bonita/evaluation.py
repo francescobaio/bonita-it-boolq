@@ -12,7 +12,9 @@ def encode_request(tokenizer, context: str, continuation: str) -> tuple[list[int
 
 
 @torch.no_grad()
-def continuation_logprobs(model, tokenizer, contexts: list[str], continuations: list[str], batch_size: int = 16) -> np.ndarray:
+def continuation_logprobs(
+    model, tokenizer, contexts: list[str], continuations: list[str], batch_size: int = 16
+) -> np.ndarray:
     """Sum of the log-probabilities of each continuation given its context."""
     requests = [encode_request(tokenizer, c, x) for c, x in zip(contexts, continuations, strict=True)]
     scores = np.zeros(len(requests))
