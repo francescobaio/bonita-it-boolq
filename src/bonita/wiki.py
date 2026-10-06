@@ -2,7 +2,7 @@ import os
 import random
 
 import numpy as np
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 from .config import N_PASSAGES, SEED, WIKI_PATH, WIKI_SHARD
 from .data import read_jsonl, write_jsonl
@@ -20,11 +20,13 @@ def candidate_paragraphs(text: str, min_words: int) -> list[str]:
 
 def collect_wiki_passages(min_words: int, n_passages: int = N_PASSAGES) -> list[dict]:
     """One random paragraph of prose from each of `n_passages` shuffled articles."""
-    wiki = load_dataset("parquet", data_files=WIKI_SHARD, split="train").shuffle(seed=SEED)
+    wiki = load_dataset("parquet", data_files=WIKI_SHARD, split="train")
+    assert isinstance(wiki, Dataset)  # a single split, not a DatasetDict
+    wiki = wiki.shuffle(seed=SEED)
     rng = random.Random(SEED)
     passages = []
-    for article in wiki:
-        candidates = candidate_paragraphs(article["text"], min_words)
+    for text in wiki["text"]:  # lazy column: one article at a time
+        candidates = candidate_paragraphs(text, min_words)
         if candidates:
             passages.append({"passage": rng.choice(candidates)})
         if len(passages) >= n_passages:

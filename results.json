@@ -1,0 +1,23 @@
+{
+ "generation": {
+  "generated": 10000,
+  "malformed": 4,
+  "duplicate": 32,
+  "kept": 9964,
+  "vero_rate": 0.7131674026495384
+ },
+ "results": {
+  "always Vero (majority)": {
+   "acc": 0.6096385542168675,
+   "macro_f1": 0.3787425149700599
+  },
+  "Minerva-7B-instruct (baseline)": {
+   "acc": 0.7971887550200804,
+   "macro_f1": 0.7943411220769314
+  },
+  "student (BONITA data)": {
+   "acc": 0.8815261044176707,
+   "macro_f1": 0.8764858314762629
+  }
+ }
+}

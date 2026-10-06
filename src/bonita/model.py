@@ -1,4 +1,4 @@
-import os
+import tempfile
 
 import pandas as pd
 import torch
@@ -33,9 +33,8 @@ def load_model(tokenizer=None, model_name: str = BASE_MODEL) -> transformers.Pre
 
 
 def load_bonita(bonita_dir: str):
-    """4-bit model with the BONITA adapter, and its tokenizer (with the special tokens) padded on the left."""
+    """4-bit model with the BONITA adapter, and its tokenizer (with the special tokens)."""
     tokenizer = AutoTokenizer.from_pretrained(bonita_dir)
-    tokenizer.padding_side = "left"  # batched generation: every prompt must end right before the new tokens
     model = PeftModel.from_pretrained(load_model(tokenizer), bonita_dir)
     model.eval()
     return model, tokenizer
@@ -65,7 +64,6 @@ def lora_config(trainable_token_ids: list[int] | None = None) -> LoraConfig:
         lora_alpha=32,
         target_modules="all-linear",
         lora_dropout=0.05,
-        bias="none",
         task_type="CAUSAL_LM",
         trainable_token_indices={"embed_tokens": trainable_token_ids, "lm_head": trainable_token_ids}
         if trainable_token_ids
@@ -79,7 +77,6 @@ def sft_config(output_dir: str, num_epochs: int) -> SFTConfig:
         output_dir=output_dir,
         num_train_epochs=num_epochs,
         per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
         gradient_accumulation_steps=2,
         learning_rate=5e-5,
         lr_scheduler_type="cosine",
@@ -88,14 +85,12 @@ def sft_config(output_dir: str, num_epochs: int) -> SFTConfig:
         completion_only_loss=True,
         eval_strategy="steps",
         eval_steps=100,
-        save_strategy="steps",  # must match eval_strategy for load_best_model_at_end
         save_steps=100,
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
         logging_steps=25,
-        report_to="tensorboard",
         seed=SEED,
     )
 
@@ -110,20 +105,21 @@ def train_lora(
     trainable_token_ids: list[int] | None = None,
 ) -> None:
     """Adds a fresh LoRA to `model`, trains it, saves the best adapter to `output_dir` and prints the dev losses."""
+    transformers.set_seed(SEED)  # the LoRA weights are initialized before the Trainer sets its own seed
     model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
     model = get_peft_model(model, lora_config(trainable_token_ids))
+    assert isinstance(model, PeftModel)  # not a PeftMixedModel (mixed=False)
     model.print_trainable_parameters()
-    trainer = SFTTrainer(
-        model=model,
-        args=sft_config(
-            os.path.join(os.path.dirname(output_dir), f"outputs_{os.path.basename(output_dir)}"), num_epochs
-        ),
-        train_dataset=Dataset.from_list(train_rows).select_columns(["prompt", "completion"]),
-        eval_dataset=Dataset.from_list(dev_rows).select_columns(["prompt", "completion"]),
-        processing_class=tokenizer,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
-    )
-    trainer.train()
+    with tempfile.TemporaryDirectory() as ckpt_dir:  # intermediate checkpoints, deleted after training
+        trainer = SFTTrainer(
+            model=model,
+            args=sft_config(ckpt_dir, num_epochs),
+            train_dataset=Dataset.from_list(train_rows).select_columns(["prompt", "completion"]),
+            eval_dataset=Dataset.from_list(dev_rows).select_columns(["prompt", "completion"]),
+            processing_class=tokenizer,
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
+        )
+        trainer.train()
     # the best checkpoint is loaded into `model`; only the LoRA and the trained token rows are saved
     # (PEFT would otherwise save the whole resized embeddings and LM head, ~1.7 GB)
     model.save_pretrained(output_dir, save_embedding_layers=False)

@@ -21,7 +21,7 @@ Following the Bonito paper, BONITA is evaluated **extrinsically**: a student, [`
 ## Pipeline
 
 1. **Train BONITA**: a QLoRA adapter on Minerva-7B-base, trained on 80% of `boolq_italian` (`train` + `validation` merged, split by passage) in the Bonito meta-template.
-2. **Collect unannotated text**: 10,000 paragraphs of prose from Italian Wikipedia (`wikimedia/wikipedia`, `20231101.it`), the same source as the BoolQ passages.
+2. **Collect unannotated text**: 10,000 paragraphs of prose from Italian Wikipedia (`wikimedia/wikipedia`, `20231101.it`), the same kind of source as BoolQ, whose passages are English Wikipedia paragraphs translated into Italian.
 3. **Generate a synthetic dataset**: BONITA writes one question/answer pair per paragraph (greedy decoding); unparseable generations and duplicate questions are discarded.
 4. **Train the student**: a new LoRA on Minerva-7B-instruct, trained **only** on the synthetic dataset.
 5. **Evaluate** Minerva-7B-instruct without fine-tuning and the student on the remaining 20% (2,490 examples) by log-likelihood.
@@ -91,7 +91,7 @@ To avoid leakage, the 80/20 split is done by passage, and test examples whose pa
 │   ├── generate.py          # stage 2: collect passages and generate the synthetic dataset
 │   └── train_student.py     # stage 3: train the student
 ├── ckpt/                    # adapters and trainer checkpoints (not versioned)
-└── results/                 # generation statistics, metrics and predictions (not versioned)
+└── results.json             # generation statistics and metrics
 ```
 
 ## Getting started

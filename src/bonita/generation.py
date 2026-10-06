@@ -10,10 +10,13 @@ LABEL_RE = re.compile(r"Risposta:\s*(Vero|Falso)\b", re.IGNORECASE)
 
 @torch.no_grad()
 def batch_generate(model, tokenizer, prompts: list[str], batch_size: int = 16, **generation_kwargs) -> list[str]:
-    """Generates one completion per prompt (new tokens only, special tokens removed); needs left padding."""
+    """Generates one completion per prompt (new tokens only, special tokens removed)."""
     predictions = []
     for i in tqdm(range(0, len(prompts), batch_size)):
-        inputs = tokenizer(prompts[i : i + batch_size], return_tensors="pt", padding=True).to(model.device)
+        # left padding: every prompt ends right before the new tokens
+        inputs = tokenizer(prompts[i : i + batch_size], padding=True, padding_side="left", return_tensors="pt").to(
+            model.device
+        )
         outputs = model.generate(
             **inputs, pad_token_id=tokenizer.pad_token_id, tokenizer=tokenizer, **generation_kwargs
         )
@@ -39,7 +42,7 @@ def parse_generation(text: str) -> dict | None:
 def filter_generations(passages: list[dict], generations: list[str]) -> tuple[list[dict], dict]:
     """Keeps the parseable, non-duplicate tasks; returns them with the generation statistics."""
     generated, seen = [], set()
-    counts = {"generated": len(generations), "malformed": 0, "duplicate": 0}
+    counts: dict[str, float] = {"generated": len(generations), "malformed": 0, "duplicate": 0}
     for passage, text in zip(passages, generations, strict=True):
         parsed = parse_generation(text)
         if parsed is None:
@@ -52,5 +55,5 @@ def filter_generations(passages: list[dict], generations: list[str]) -> tuple[li
         seen.add(key)
         generated.append({"passage": passage["passage"], **parsed})
     counts["kept"] = len(generated)
-    counts["vero_rate"] = sum(r["label"] for r in generated) / len(generated)
+    counts["vero_rate"] = sum(r["label"] for r in generated) / len(generated) if generated else 0.0
     return generated, counts

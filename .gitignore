@@ -38,8 +38,6 @@ wandb/
 
 # --- Data ---
 data/
-results/*
-!results/.gitkeep
 *.jsonl
 *.parquet
 *.arrow

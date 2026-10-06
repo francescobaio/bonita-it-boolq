@@ -85,17 +85,13 @@ def student_rows(generated: list[dict]) -> list[dict]:
     ]
 
 
-def eval_examples(boolq_test: list[dict]) -> list[dict]:
-    """Test examples in the student prompt format, with a fixed instruction (the first variant)."""
+def eval_prompts(boolq_test: list[dict], instruction: str) -> list[str]:
+    """Test examples in the student prompt format, all with the same `instruction`."""
     return [
-        {
-            "id": ex["id"],
-            "prompt": PROMPT_TEMPLATE.format(
-                passage=ex["metadata"]["passage_translation"],
-                task=f"{INSTRUCTION_VARIANTS[0]} {ex['input_translation']} {QUESTION_SUFFIX}",
-            ),
-            "label": int(ex["label"]),
-        }
+        PROMPT_TEMPLATE.format(
+            passage=ex["metadata"]["passage_translation"],
+            task=f"{instruction} {ex['input_translation']} {QUESTION_SUFFIX}",
+        )
         for ex in boolq_test
     ]
 

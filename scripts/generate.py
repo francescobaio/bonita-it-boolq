@@ -5,8 +5,8 @@ os.environ.setdefault("CUDA_VISIBLE_DEVICES", "0")
 
 import transformers
 
-from bonita.config import BONITA_DIR, GENERATED_PATH, GENERATION_STATS_PATH, SEED, TEST_FRAC
-from bonita.data import BONITA_INPUT, answer_text, load_boolq_splits, write_jsonl
+from bonita.config import BONITA_DIR, GENERATED_PATH, RESULTS_PATH, SEED, TEST_FRAC
+from bonita.data import BONITA_INPUT, load_boolq_splits, write_jsonl
 from bonita.generation import batch_generate, filter_generations
 from bonita.model import load_bonita
 from bonita.wiki import load_or_collect_passages
@@ -30,11 +30,11 @@ generations = batch_generate(
 
 generated, counts = filter_generations(wiki_passages, generations)
 write_jsonl(generated, GENERATED_PATH)
-os.makedirs(os.path.dirname(GENERATION_STATS_PATH), exist_ok=True)
-with open(GENERATION_STATS_PATH, "w") as f:
-    json.dump(counts, f, indent=1)
-
-print(counts)
-for row in generated[:5]:
-    print(row["passage"][:200], "...")
-    print("  ->", row["task"], "|", answer_text(row["label"]))
+# the statistics go to the "generation" key of the results, keeping the metrics if already there
+results = {}
+if os.path.exists(RESULTS_PATH):
+    with open(RESULTS_PATH) as f:
+        results = json.load(f)
+results["generation"] = counts
+with open(RESULTS_PATH, "w") as f:
+    json.dump(results, f, indent=1)
