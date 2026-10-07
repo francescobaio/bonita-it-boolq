@@ -32,10 +32,10 @@ def continuation_logprobs(
 
 
 def evaluate_model(model, tokenizer, prompts: list[str]) -> np.ndarray:
-    """Scores both continuations for every prompt; the index of the best one is the predicted label."""
+    """Log-likelihoods of both continuations for every prompt, shape (n, 2); the argmax is the predicted label."""
     contexts = [p for p in prompts for _ in CHOICES]
     continuations = [c for _ in prompts for c in CHOICES]
-    return continuation_logprobs(model, tokenizer, contexts, continuations).reshape(-1, len(CHOICES)).argmax(axis=1)
+    return continuation_logprobs(model, tokenizer, contexts, continuations).reshape(-1, len(CHOICES))
 
 
 def macro_f1(pred: np.ndarray, gold: np.ndarray) -> float:

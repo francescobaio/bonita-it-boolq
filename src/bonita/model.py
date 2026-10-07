@@ -40,23 +40,6 @@ def load_bonita(bonita_dir: str):
     return model, tokenizer
 
 
-def init_special_tokens(model, tokenizer, tokens: list[str]) -> list[int]:
-    """Initializes the input and output embeddings of `tokens` as the mean of those of their name.
-
-    E.g. `<|pipe|>` starts from the mean of the rows of ` pipe`.
-
-    New rows added by `resize_token_embeddings` all start from the same small mean vector: the tokens would be
-    indistinguishable as input and too weak as output to ever be generated. Returns the ids of `tokens`.
-    """
-    token_ids = tokenizer.convert_tokens_to_ids(tokens)
-    with torch.no_grad():
-        for token, token_id in zip(tokens, token_ids, strict=True):
-            name_ids = tokenizer(" " + token.strip("<|>"), add_special_tokens=False).input_ids
-            for layer in (model.get_input_embeddings(), model.get_output_embeddings()):
-                layer.weight[token_id] = layer.weight[name_ids].mean(dim=0)
-    return token_ids
-
-
 def lora_config(trainable_token_ids: list[int] | None = None) -> LoraConfig:
     """LoRA on all linear projections, plus the rows of `trainable_token_ids` in the (untied) embeddings and LM head."""
     return LoraConfig(

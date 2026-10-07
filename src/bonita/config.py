@@ -10,6 +10,7 @@ WIKI_PATH = "wiki_passages.jsonl"
 GENERATED_PATH = "generated_tasks.jsonl"
 STUDENT_DIR = f"{CKPT_DIR}/student_bonita"
 RESULTS_PATH = "results.json"  # generation statistics and metrics
+PREDICTIONS_PATH = "predictions.jsonl"  # per-example test scores, for the error analysis
 
 TEST_FRAC = 0.2  # share of BoolQ-Italian passages held out as the final test set of the baseline and the student
 N_PASSAGES = 10_000  # unannotated paragraphs given to BONITA (~ size of BoolQ train)
