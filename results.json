@@ -11,13 +11,37 @@
    "acc": 0.6096385542168675,
    "macro_f1": 0.3787425149700599
   },
-  "Minerva-7B-instruct (baseline)": {
+  "Baseline, instruction 0": {
    "acc": 0.7971887550200804,
    "macro_f1": 0.7943411220769314
   },
-  "student (BONITA data)": {
+  "Baseline, instruction 1": {
+   "acc": 0.8112449799196787,
+   "macro_f1": 0.8085763300043967
+  },
+  "Baseline, instruction 2": {
+   "acc": 0.7959839357429719,
+   "macro_f1": 0.7943194094756293
+  },
+  "Baseline, mean": {
+   "acc": 0.8014725568942437,
+   "macro_f1": 0.7990789538523191
+  },
+  "Student, instruction 0": {
    "acc": 0.8815261044176707,
    "macro_f1": 0.8764858314762629
+  },
+  "Student, instruction 1": {
+   "acc": 0.8771084337349397,
+   "macro_f1": 0.8725682365533851
+  },
+  "Student, instruction 2": {
+   "acc": 0.8815261044176707,
+   "macro_f1": 0.8768540832791969
+  },
+  "Student, mean": {
+   "acc": 0.8800535475234269,
+   "macro_f1": 0.8753027171029483
   }
  }
 }
