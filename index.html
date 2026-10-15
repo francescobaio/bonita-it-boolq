@@ -532,7 +532,7 @@ mean
 <div class="block-body">
 <ul>
 <li><em>“Is a lightning bug the same as a firefly?”</em> was machine-translated as <em>“La lucciola è la stessa cosa di una <span class="hl">lanterna volante</span>?”</em>, a paper sky lantern: the gold answer <code>Vero</code> no longer fits the Italian question</li>
-<li><em>“Il carbonio è un metallo nel sistema periodico?”</em> is labeled <code>Vero</code>, while its passage says that carbon is a non-metal</li>
+<li><em>“Il carbonio è un metallo nel sistema periodico?”</em> is labeled <code>Vero</code>, while its passage says <em>“È un <span class="hl">elemento non metallico</span> e tetravalente”</em></li>
 </ul>
 </div>
 </div>
@@ -549,9 +549,10 @@ mean
 </div>
 <div class="block-body">
 <ul>
-<li>The test set comes from the same dataset as BONITA’s training data, and the student is trained on the test prompt while the baseline is not: no evidence on a new domain or prompt</li>
-<li>No comparison with training on the human labels, or with next-word prediction on the same paragraphs</li>
-<li>BONITA’s questions were not checked by hand, and some are not grounded in their paragraph</li>
+<li>No baseline for the generation: we did not compare with a model trained with next-word prediction on the same paragraphs</li>
+<li>No reference for the student: we did not compare with a student trained on the human labels instead of BONITA’s questions</li>
+<li>BONITA’s questions and answers were not checked by hand, so we are not sure of their quality</li>
+<li>The test questions come from the same dataset BONITA was trained on: we have no evidence on a new domain</li>
 </ul>
 </div>
 </div>
