@@ -1,0 +1,5 @@
+_shots/
+.quarto/
+index.html
+index_files/
+figures/*.tex

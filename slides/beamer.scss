@@ -1,0 +1,420 @@
+/*-- scss:defaults --*/
+
+// Beamer-like palette: dark red bars, red titles, grey boxes
+$beamer-red: #a30000;
+$beamer-title: #cc0000;
+$beamer-light: #ececec;
+$beamer-mid: #dcdcdc;
+
+// Computer Modern (CMU Serif), with a lighter demi bold and a light typewriter for code.
+// The fonts are in fonts/, so the slides also work offline.
+$font-family-slides: "CMU Serif Slides", "Latin Modern Roman", "CMU Serif", Georgia, serif;
+$font-family-sans-serif: $font-family-slides;
+$font-family-monospace: "CMU Typewriter Light Slides", monospace;
+$presentation-font-size-root: 26px;
+$presentation-h2-font-size: 1.3em;
+$presentation-heading-font: $font-family-slides;
+$presentation-heading-color: $beamer-title;
+$presentation-heading-font-weight: 400;
+$presentation-heading-text-transform: none;
+$presentation-block-margin: 14px;
+$body-color: #000000;
+$link-color: $beamer-red;
+$code-color: #000000;
+
+/*-- scss:rules --*/
+
+// paths are relative to the compiled theme, in index_files/libs/revealjs/dist/theme/
+@font-face {
+  font-family: "CMU Serif Slides";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../../../../../fonts/cmunrm.woff") format("woff");
+}
+
+@font-face {
+  font-family: "CMU Serif Slides";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../../../../../fonts/cmunti.woff") format("woff");
+}
+
+// Latin Modern demi instead of bold extended: lighter emphasis
+@font-face {
+  font-family: "CMU Serif Slides";
+  font-style: normal;
+  font-weight: 600;
+  src: url("../../../../../fonts/lmromandemi10-regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "CMU Typewriter Light Slides";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../../../../../fonts/cmunbtl.woff") format("woff");
+}
+
+// progress bar used as the top band of the Beamer theme
+// thin progress line at the top
+.reveal .progress {
+  top: 0;
+  bottom: auto;
+  height: 4px;
+  background: transparent;
+  color: $beamer-red;
+}
+
+.reveal .progress span {
+  background: $beamer-red;
+}
+
+// every slide: frame title at the top, content centered in the remaining space
+.reveal .slides section.present {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 95px 0 36px 0 !important;
+  font-size: 0.85em;
+}
+
+.reveal .slides section.present > * {
+  max-width: 100%;
+}
+
+// lists start at the left margin, like the blocks, even when their lines are short
+.reveal .slides section.present > ul {
+  align-self: stretch;
+}
+
+.reveal .slides section.present > .columns {
+  width: 100%;
+  align-items: center;
+}
+
+// frame title: red text over a thin red rule
+.reveal .slides section h2 {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  right: 0;
+  padding: 0 0 0.2em 0;
+  border-bottom: 2px solid $beamer-red;
+  margin: 0;
+  text-align: left;
+}
+
+.reveal ul li::marker,
+.reveal ol li::marker {
+  color: $beamer-red;
+}
+
+.reveal ul ul {
+  font-size: 0.92em;
+}
+
+.reveal strong {
+  font-weight: 600;
+}
+
+// red text for the few key points, without bold
+.reveal .hl {
+  color: $beamer-red;
+}
+
+// block: light grey body with a thin red edge, title in red text instead of a band
+.reveal .block {
+  width: 100%;
+  margin: 0.35em 0;
+  border-left: 4px solid $beamer-red;
+  border-radius: 4px;
+  background: #f6f6f6;
+  overflow: hidden;
+  text-align: left;
+}
+
+.reveal .block > .block-title {
+  color: $beamer-red;
+  padding: 0.3em 0.7em 0 0.7em;
+}
+
+.reveal .block > .block-body {
+  padding: 0.1em 0.7em 0.35em 0.7em;
+}
+
+.reveal .block > .block-title p,
+.reveal .block > .block-body p {
+  margin: 0.15em 0;
+}
+
+.reveal .block > .block-body ul {
+  margin-top: 0.1em;
+}
+
+// title slide: title and subtitle in a box with a shadow, then authors, supervisor and date
+.reveal .slides section.beamer-title {
+  text-align: center;
+  padding-top: 40px !important;
+}
+
+.reveal .slides section.beamer-title h2 {
+  display: none;
+}
+
+.beamer-title .titlebox {
+  width: 96%;
+  margin: 0 0 1.1em 0;
+  padding: 0.6em 0.4em;
+  border-top: 2px solid $beamer-red;
+  border-bottom: 2px solid $beamer-red;
+}
+
+.beamer-title .t1 {
+  display: block;
+  color: $beamer-title;
+  font-size: 1.4em;
+  line-height: 1.3;
+}
+
+.beamer-title .t2 {
+  display: block;
+  color: $beamer-title;
+  font-size: 0.9em;
+  margin-top: 0.5em;
+}
+
+.beamer-title .who {
+  display: block;
+  font-size: 1.05em;
+  margin-top: 0.4em;
+}
+
+.beamer-title .prof {
+  display: block;
+  font-size: 0.85em;
+  margin-top: 0.9em;
+}
+
+.beamer-title .where {
+  display: block;
+  font-size: 0.75em;
+  margin-top: 0.4em;
+}
+
+.beamer-title .when {
+  display: block;
+  font-size: 1em;
+  margin-top: 1.2em;
+}
+
+// Beamer-like footer: author | title | date, with the slide number in the last box
+.beamer-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26px;
+  display: flex;
+  font-family: $font-family-slides;
+  font-size: 15px;
+  line-height: 26px;
+  z-index: 20;
+}
+
+.beamer-footer span {
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.beamer-footer .bf-author {
+  background: $beamer-red;
+  color: #ffffff;
+}
+
+.beamer-footer .bf-title {
+  background: $beamer-light;
+  color: $beamer-title;
+}
+
+.beamer-footer .bf-date {
+  background: $beamer-mid;
+  color: #000000;
+  text-align: left;
+  padding-left: 9%;
+}
+
+.reveal .slide-number {
+  right: 12px !important;
+  bottom: 0 !important;
+  background: transparent !important;
+  color: #000000 !important;
+  font-family: $font-family-slides;
+  font-size: 15px !important;
+  line-height: 26px !important;
+  padding: 0 !important;
+  z-index: 30;
+}
+
+// tables as in the report: booktabs rules, model names centered on their rows
+.reveal table.booktabs {
+  font-size: 1em;
+  margin: 0.3em auto;
+  border-collapse: collapse;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+}
+
+.reveal table.booktabs th,
+.reveal table.booktabs td {
+  border: none;
+  padding: 0.12em 0.7em;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.reveal table.booktabs thead tr:last-child th {
+  border-bottom: 1px solid #000000;
+  font-weight: 400;
+}
+
+.reveal table.booktabs th.span {
+  border-bottom: 1px solid #000000;
+}
+
+.reveal table.booktabs tr.mid td {
+  border-top: 1px solid #000000;
+}
+
+.reveal table.booktabs tr.end td {
+  border-bottom: 1px solid #000000;
+}
+
+.reveal table.booktabs td.left,
+.reveal table.booktabs th.left {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.reveal .caption {
+  font-size: 0.6em;
+  color: #444444;
+  text-align: center;
+  margin-top: 0.2em;
+}
+
+.reveal pre {
+  width: 100%;
+  font-size: 0.55em;
+  border: 1px solid #c8c8c8;
+  border-radius: 4px;
+  background: #f7f7f7;
+  box-shadow: none;
+  margin: 0.3em 0;
+}
+
+.reveal pre code {
+  padding: 0.4em 0.6em;
+  max-height: none;
+  background: transparent;
+}
+
+.reveal code {
+  font-size: 0.9em;
+}
+
+// meta-template slide: larger code, readable when projected
+.reveal .slides section.meta pre {
+  font-size: 0.78em;
+}
+
+// columns vertically centered on each other
+.reveal .slides div.column {
+  vertical-align: middle;
+}
+
+// space between the code and the text
+.reveal .slides section.meta div.column:first-child {
+  padding-right: 1.4em;
+  box-sizing: border-box;
+}
+
+// animated pipeline slide: each click adds a part of the figure and its sentence below;
+// hidden parts already take their space, so title and figure never move
+.reveal .slides section.present.pipeline {
+  justify-content: flex-start;
+  gap: 1.4em;
+  padding-top: 170px !important;
+}
+
+.reveal .slides section.pipeline .pipeline-fig {
+  width: 94%;
+}
+
+.reveal .slides section.pipeline .pipeline-fig img {
+  width: 100%;
+  margin: 0;
+}
+
+.reveal .slides section.pipeline ul.pipeline-steps {
+  width: 94%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+// the part of the figure slides in from the left, like the flow of the pipeline
+.reveal .slides section.pipeline .fragment.pipe-in {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-28px);
+  filter: blur(3px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease-out, visibility 0.9s;
+}
+
+.reveal .slides section.pipeline .fragment.pipe-text {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease-out 0.25s, transform 0.6s ease-out 0.25s, visibility 0.6s 0.25s;
+}
+
+.reveal .slides section.pipeline .fragment.pipe-in.visible,
+.reveal .slides section.pipeline .fragment.pipe-text.visible {
+  opacity: 1;
+  visibility: inherit;
+  transform: none;
+  filter: none;
+}
+
+// robustness slide: the points start at the height of the first row of cells of the figure
+.reveal .slides section.robust div.column {
+  vertical-align: top;
+}
+
+.reveal .slides section.robust div.column:last-child {
+  padding-top: 88px;
+}
+
+// example slide: blocks grouped in the middle instead of spread over the whole height
+.reveal .slides section.present.compact {
+  justify-content: center;
+  gap: 1.2em;
+}
+
+// columns aligned at the top
+.reveal .slides section.top div.column {
+  vertical-align: top;
+}
+
+.reveal .slides section.top pre {
+  margin-top: 14px;
+}
+
+// title slide: authors, supervisor and date slightly closer to the title box
+.reveal .slides section.beamer-title > p {
+  position: relative;
+  top: -40px;
+}
